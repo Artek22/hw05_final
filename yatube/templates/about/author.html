@@ -1,0 +1,14 @@
+<!-- templates/about/author.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} <title>Об авторе проекта</title>{% endblock %}
+{% block content %}
+  <img class="card-img-top" src="{% static 'img/coder.png' %}" alt="Card image cap">
+  <div class="card-body">
+    <h5 class="card-title">Привет, я автор.</h5>
+    <p class="card-text">Эта социальная сеть - мой проект в Яндекс.Практикуме. Изучаю Python и framework Django,
+    работу с реляционными базами данных. Надеюсь, у меня все получится, и я исполню свою мечту стать backend-разработчиком. <br>
+    Никакой уточки, помогающей писать код, у меня нет, но зато есть огромное желание добиться поставленной цели.</p>
+  </div>
+{% endblock %}
