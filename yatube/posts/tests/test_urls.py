@@ -46,6 +46,11 @@ class PostURLTests(TestCase):
         response = self.guest_client.get('/posts/vot_tak_vot/')
         self.assertEqual(response.status_code, 404)
 
+    def test_redirect_404_page(self):
+        """Несуществующая страница возвращает 404"""
+        response = self.guest_client.get('/posts/vot_tak_vot/')
+        self.assertTemplateUsed(response, 'core/404.html')
+
     # Проверка вызываемых шаблонов для каждого адреса
     def test_urls_uses_correct_template(self):
         post_detail = reverse('posts:post_detail', args=[self.post.pk])

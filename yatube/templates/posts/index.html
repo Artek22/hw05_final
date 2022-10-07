@@ -5,16 +5,19 @@
 {% endblock %}
 
 {% block content %}
+  {% include 'posts/includes/switcher.html' %}
   {% load thumbnail %}
   {% load cache %}
-  <div class="container py-5">
-    <h1>Последние обновления на сайте</h1>
-      {% cache 20 index_page %}
+  <div class="container py-3">
+    <h1> Последние обновления на сайте </h1>
+      {% cache 10 index_page %}
       <article>
         {% for post in page_obj %}
           <ul>
             <li>
-              Автор: {{ post.author.get_full_name }}
+              Автор: <a href="{% url 'posts:profile' post.author %}">
+                {{ post.author.get_full_name }}
+                </a>
             </li>
             <li>
               Дата публикации: {{ post.pub_date|date:"d E Y" }}
@@ -26,6 +29,10 @@
         {% endthumbnail %}
 
           <p>{{ post.text }}</p>
+            <a href="{% url 'posts:post_detail' post.pk %}">
+              Подробнее...
+            </a>
+            <br>
           {% if post.group %}
             <a href="{% url 'posts:group_list' post.group.slug %}">
               Все записи группы '{{ post.group.slug }}'

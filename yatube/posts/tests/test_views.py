@@ -83,16 +83,16 @@ class PostPagesTests(TestCase):
                 response = self.authorized_client.get(reverse_name)
                 self.assertTemplateUsed(response, template)
 
-
-    def test_group_list_correct_context_image(self):
-        """Шаблон group_list сформирован с правильным контекстом."""
-        response = self.authorized_client.get(
-            reverse('posts:group_list', args=['test-slug'])
-        )
-        self.assertEqual(response.context['group'].title, self.group.title)
-        self.assertEqual(response.context['group'].slug, self.group.slug)
-        self.assertEqual(response.context['group'].description, self.group.description)
-        self.assertEqual(response.context['page_obj'][0].image, self.post.image)
+    def test_urls_correct_context_image(self):
+        template_urls = [
+            reverse('posts:index'),
+            reverse('posts:group_list', args=['test-slug']),
+            reverse('posts:profile', args=[self.user]),
+        ]
+        for url in template_urls:
+            response = self.authorized_client.get(url)
+            response_post = response.context['page_obj'][0].image
+            self.assertEqual(response_post, self.post.image)
 
     def test_urls_show_correct_context(self):
         template_urls = [
@@ -104,6 +104,12 @@ class PostPagesTests(TestCase):
             response = self.authorized_client.get(url)
             response_post = response.context['page_obj'][0]
             self.assertEqual(response_post, self.post)
+
+    def test_post_detail_show_correct_context_image(self):
+        response = self.authorized_client.get(
+            reverse('posts:post_detail', args=[self.post.pk]))
+        response_post = response.context['post']
+        self.assertEqual(response_post.image, self.post.image)
 
     def test_post_detail_show_correct_context(self):
         """Проверка post_detail на правильный контекст."""

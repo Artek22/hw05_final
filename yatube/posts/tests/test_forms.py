@@ -22,11 +22,13 @@ SMALL_GIF = (
     b'\x0A\x00\x3B'
 )
 
+
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostCreateFormTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.form = PostForm()
         cls.uploaded = SimpleUploadedFile(
             name='small.gif',
             content=SMALL_GIF,
@@ -44,7 +46,6 @@ class PostCreateFormTests(TestCase):
             image=cls.uploaded,
             pk=101,
         )
-        cls.form = PostForm()
 
     @classmethod
     def tearDownClass(cls):
@@ -61,6 +62,7 @@ class PostCreateFormTests(TestCase):
         posts_count = Post.objects.count()
         form_data = {
             'author': self.user,
+            'group': self.group.pk,
             'text': 'Привет, это мой пост.',
             'image': self.uploaded,
         }
@@ -73,12 +75,7 @@ class PostCreateFormTests(TestCase):
         self.assertRedirects(response, reverse('posts:profile',
                                                args=[self.user]))
         self.assertEqual(Post.objects.count(), posts_count + 1)
-        self.assertTrue(
-            Post.objects.filter(
-                text=form_data['text'],
-                # image=form_data['image'],
-            ).exists()
-        )
+        self.assertEqual(self.post.image.name, 'posts/small.gif')
 
     def test_edit_post(self):
         """Валидная форма редактирует пост."""
@@ -92,4 +89,3 @@ class PostCreateFormTests(TestCase):
         )
         self.post.refresh_from_db()
         self.assertEqual(self.post.text, form_data['text'])
-
