@@ -90,6 +90,11 @@ class Comment(models.Model):
 
 
 class Follow(models.Model):
+    class Meta:
+        index_together = [
+            ['user', 'author'],
+        ]
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

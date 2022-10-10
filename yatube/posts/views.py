@@ -46,7 +46,6 @@ def post_detail(request, post_id):
     form = CommentForm(request.POST or None)
     context = {
         'post': post,
-        'author': post.author,
         'form': form,
         'comments': comments,
     }

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from ..models import Post, Group
+from posts.models import Post, Group
 
 User = get_user_model()
 
@@ -32,7 +32,7 @@ class PostURLTests(TestCase):
         template_list = [
             '/',
             '/group/test-slug/',
-            '/profile/auth/',
+            f'/profile/{self.post.author}/',
             f'/posts/{self.post.pk}/',
 
         ]
@@ -57,8 +57,8 @@ class PostURLTests(TestCase):
         post_edit = reverse('posts:post_edit', args=[self.post.pk])
         template_url_names = {
             '/': 'posts/index.html',
-            '/group/test-slug/': 'posts/group_list.html',
-            '/profile/auth/': 'posts/profile.html',
+            f'/group/{self.group.slug}/': 'posts/group_list.html',
+            f'/profile/{self.post.author}/': 'posts/profile.html',
             post_detail: 'posts/post_detail.html',
             '/create/': 'posts/create_post.html',
             post_edit: 'posts/create_post.html',
