@@ -31,7 +31,7 @@ class PostURLTests(TestCase):
     def test_url_access(self):
         template_list = [
             '/',
-            '/group/test-slug/',
+            f'/group/{self.group.slug}/',
             f'/profile/{self.post.author}/',
             f'/posts/{self.post.pk}/',
 

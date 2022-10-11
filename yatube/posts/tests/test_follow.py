@@ -52,7 +52,8 @@ class FollowViewTest(TestCase):
 
     def test_follow_another_user(self):
         """Авторизованный пользователь,
-        может подписываться на других пользователей"""
+        может подписываться на других пользователей
+        """
         follow_count = Follow.objects.count()
         self.authorized_client.get(reverse('posts:profile_follow',
                                            kwargs={'username': self.user_2}))
@@ -62,7 +63,8 @@ class FollowViewTest(TestCase):
 
     def test_unfollow_another_user(self):
         """Авторизованный пользователь
-        может удалять других пользователей из подписок"""
+        может удалять других пользователей из подписок
+        """
         Follow.objects.create(user=self.user, author=self.user_2)
         follow_count = Follow.objects.count()
         self.assertTrue(Follow.objects.filter(user=self.user,
@@ -82,8 +84,8 @@ class FollowViewTest(TestCase):
         self.assertEqual(Follow.objects.count(), follow_count - 1)
 
     def test_new_post_follow(self):
-        """ Новая запись пользователя будет в ленте у тех кто на него
-            подписан.
+        """ Новая запись пользователя будет в ленте у тех,
+         кто на него подписан.
         """
         following = User.objects.create(username='following')
         Follow.objects.create(user=self.user, author=following)
@@ -92,7 +94,8 @@ class FollowViewTest(TestCase):
         self.assertIn(post, response.context['page_obj'].object_list)
 
     def test_new_post_unfollow(self):
-        """ Новая запись пользователя не будет у тех кто не подписан на него.
+        """ Новая запись пользователя не будет видна у тех,
+        кто не подписан на него.
         """
         self.client.logout()
         User.objects.create_user(
@@ -105,3 +108,37 @@ class FollowViewTest(TestCase):
             self.post.text,
             response.context['page_obj'].object_list
         )
+
+    def test_nothing_changed_if_self_follow(self):
+        """В БД ничего не меняется,
+        когда юзер пытается подписаться сам на себя.
+        """
+        following = User.objects.create(username='following')
+        Follow.objects.create(user=following, author=following)
+        post = Post.objects.create(author=following, text=self.post.text)
+        response = self.authorized_client.get(reverse('posts:follow_index'))
+        self.assertNotIn(post, response.context['page_obj'].object_list)
+
+    def test_nothing_changed_if_double_follow(self):
+        """В БД ничего не меняется, когда юзер пытается подписаться
+        на кого-то второй раз.
+        """
+        Follow.objects.create(user=self.user, author=self.user_2)
+        self.assertTrue(Follow.objects.filter(user=self.user,
+                                              author=self.user_2).exists())
+        Follow.objects.create(user=self.user, author=self.user_2)
+        self.assertTrue(Follow.objects.filter(user=self.user,
+                                              author=self.user_2).exists())
+
+    def test_nothing_changed_if_unsubscribe_unfollower(self):
+        """В БД ничего не меняется,
+        когда юзер пытается отписаться без подписки.
+        """
+        follow_count = Follow.objects.count()
+        self.authorized_client.get(
+            reverse(
+                'posts:profile_unfollow',
+                kwargs={'username': self.user_2}
+            )
+        )
+        self.assertEqual(Follow.objects.count(), follow_count)

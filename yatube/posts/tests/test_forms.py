@@ -61,10 +61,8 @@ class PostCreateFormTests(TestCase):
         """Валидная форма создает запись в Post."""
         posts_count = Post.objects.count()
         form_data = {
-            'author': self.user,
             'group': self.group.pk,
             'text': 'Привет, это мой пост.',
-            'image': self.uploaded,
         }
         response = self.authorized_client.post(
             reverse('posts:post_create'),
@@ -77,38 +75,32 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertEqual(self.post.image.name, 'posts/small.gif')
 
-    # Павел, помоги с assertFormError, пожалуйста. Выдает ошибку:
-    # AssertionError: The form 'form' was not used to render the response,
-    # при том, что status_code = 200 и вместо изображения передается mp4.
+    def test_sent_image_context(self):
+        """В форму передается именно изображение"""
 
-    # def test_sent_image_context(self):
-    #     """В форму передается именно изображение"""
-    #     MP4 = (
-    #         b'file_content'
-    #     )
-    #
-    #     uploaded2 = SimpleUploadedFile(
-    #         name='file.mp4',
-    #         content=MP4,
-    #         content_type='video/mp4'
-    #     )
-    #     form_data = {
-    #         'group': self.group.pk,
-    #         'text': 'Привет, это мой пост.',
-    #         'image': uploaded2,
-    #     }
-    #     response = self.authorized_client.post(
-    #         reverse('posts:post_create'),
-    #         data=form_data,
-    #         follow=True,
-    #     )
-    #     self.assertFormError(response,
-    #                          'form',
-    #                          'image',
-    #                          ('Загрузите правильное изображение. '
-    #                           'Файл, который вы загрузили,'
-    #                           'поврежден или не является изображением.')
-    #                          )
+        uploaded2 = SimpleUploadedFile(
+            name='file.mp4',
+            content=b'file_content',
+            content_type='video/mp4'
+        )
+        form_data = {
+            'group': self.group.pk,
+            'text': 'Привет, это мой пост.',
+            'image': uploaded2,
+        }
+        response = self.authorized_client.post(
+            reverse('posts:post_create'),
+            data=form_data,
+            follow=True,
+        )
+        self.assertFormError(response,
+                             'form',
+                             'image',
+                             ('Загрузите правильное изображение. '
+                              'Файл, который вы загрузили, поврежден '
+                              'или не является изображением.'
+                              )
+                             )
 
     def test_edit_post(self):
         """Валидная форма редактирует пост."""
