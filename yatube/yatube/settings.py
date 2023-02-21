@@ -1,9 +1,9 @@
 import os
-# from os.path import join, dirname
-# from dotenv import load_dotenv
+from os.path import join, dirname
+from dotenv import load_dotenv
 
-# dotenv_path = join(dirname(__file__), '.env')
-# load_dotenv(dotenv_path)
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
 POSTS_PER_PAGE = 10
 
@@ -11,16 +11,17 @@ POSTS_PER_PAGE = 10
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# SECRET_KEY = os.environ.get("SECRET_KEY")
-SECRET_KEY = os.environ.get("SECRET_KEY", 'asdfsadf')
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '[::1]',
     'testserver',
+    # 'www.Geffixe.pythonanywhere.com',
+    # 'Geffixe.pythonanywhere.com',
 ]
 
 INSTALLED_APPS = [
@@ -35,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sorl.thumbnail',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -45,6 +47,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+
+INTERNAL_IPS = [
+    '127.0.0.1',
 ]
 
 ROOT_URLCONF = 'yatube.urls'
@@ -92,9 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/2.2/topics/i18n/
 
 LANGUAGE_CODE = 'ru'
 
